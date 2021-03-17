@@ -226,7 +226,7 @@ def load_pose2d_fnames(fname_dict, offsets_dict=None, cam_names=None):
              try:
                 points[cam_ix, :, joint_ix] = np.array(dlabs.loc[:, (joint_name, ('x', 'y'))])[:n_frames]
                 scores[cam_ix, :, joint_ix] = np.array(dlabs.loc[:, (joint_name, ('likelihood'))])[:n_frames].ravel()
-            except KeyError:
+             except KeyError:
                 pass
 
     return {
