@@ -307,12 +307,12 @@ class Camera:
                                    self.dist.astype('float64'))
         return out.reshape(shape)
 
-    def undistort_points(self, points):
+    def undistort_points(self, points, R=None, P=None):
         shape = points.shape
         points = points.reshape(-1, 1, 2)
         out = cv2.undistortPoints(points,
                                   self.matrix.astype('float64'),
-                                  self.dist.astype('float64'))
+                                  self.dist.astype('float64'), None, R, P)
         return out.reshape(shape)
 
     def project(self, points):
@@ -373,12 +373,12 @@ class FisheyeCamera(Camera):
                                            self.dist.astype('float64'))
         return out.reshape(shape)
 
-    def undistort_points(self, points):
+    def undistort_points(self, points, R=None, P=None):
         shape = points.shape
         points = points.reshape(-1, 1, 2)
         out = cv2.fisheye.undistortPoints(points.astype('float64'),
                                           self.matrix.astype('float64'),
-                                          self.dist.astype('float64'))
+                                          self.dist.astype('float64'), None, R, P)
         return out.reshape(shape)
 
     def project(self, points):
@@ -614,7 +614,7 @@ class CameraGroup:
 
 
     # @jit(nopython=True, parallel=True, forceobj=True)
-    @jit(nopython=True)
+    # @jit(nopython=True)
     def reprojection_error(self, p3ds, p2ds, mean=False):
         """Given an Nx3 array of 3D points and an CxNx2 array of 2D points,
         where N is the number of points and C is the number of cameras,
@@ -628,9 +628,7 @@ class CameraGroup:
             one_point = True
 
         n_cams, n_points, _ = p2ds.shape
-        assert p3ds.shape == (n_points, 3), \
-            "shapes of 2D and 3D points are not consistent: " \
-            "2D={}, 3D={}".format(p2ds.shape, p3ds.shape)
+        # assert p3ds.shape == (n_points, 3), "shapes of 2D and 3D points are not consistent: 2D={}, 3D={}".format(p2ds.shape, p3ds.shape)
 
         errors = np.empty((n_cams, n_points, 2))
 
